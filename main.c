@@ -127,6 +127,19 @@ Image cortar_imagem(Image img, int x, int y, int w, int h) {
 }
 
 
+void imprimir_pixel(Image image) {
+    for (unsigned int i = 0; i < image.h; ++i) {
+        for (unsigned int j = 0; j < image.w; ++j) {
+            printf("%hu %hu %hu ", image.pixel[i][j][0],
+                                   image.pixel[i][j][1],
+                                   image.pixel[i][j][2]);
+
+        }
+        printf("\n");
+    }
+}
+
+
 int main() {
     Image img;
 
@@ -254,14 +267,6 @@ int main() {
     printf("%u %u\n255\n", img.w, img.h);
 
     // print pixels of image
-    for (unsigned int i = 0; i < img.h; ++i) {
-        for (unsigned int j = 0; j < img.w; ++j) {
-            printf("%hu %hu %hu ", img.pixel[i][j][0],
-                                   img.pixel[i][j][1],
-                                   img.pixel[i][j][2]);
-
-        }
-        printf("\n");
-    }
+    imprimir_pixel(img);
     return 0;
 }
