@@ -139,6 +139,17 @@ void imprimir_pixel(Image image) {
     }
 }
 
+void ler_pixel(Image* image) {
+    for (unsigned int i = 0; i < image->h; ++i) {
+        for (unsigned int j = 0; j < image->w; ++j) {
+            scanf("%hu %hu %hu", &image->pixel[i][j][0],
+                                 &image->pixel[i][j][1],
+                                 &image->pixel[i][j][2]);
+
+        }
+    }
+}
+
 
 int main() {
     Image img;
@@ -152,14 +163,7 @@ int main() {
     scanf("%u %u %d", &img.w, &img.h, &max_color);
 
     // read all pixels of image
-    for (unsigned int i = 0; i < img.h; ++i) {
-        for (unsigned int j = 0; j < img.w; ++j) {
-            scanf("%hu %hu %hu", &img.pixel[i][j][0],
-                                 &img.pixel[i][j][1],
-                                 &img.pixel[i][j][2]);
-
-        }
-    }
+    ler_pixel(&img);
 
     int n_opcoes;
     scanf("%d", &n_opcoes);
