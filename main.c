@@ -54,29 +54,31 @@ Image escala_de_cinza(Image img) {
     return img;
 }
 
-void blur(unsigned int h, unsigned short int pixel[512][512][3], int T, unsigned int w) {
-    for (unsigned int i = 0; i < h; ++i) {
-        for (unsigned int j = 0; j < w; ++j) {
+void blur(Image* image) {
+    int tamanho = 0;
+    scanf("%d", &tamanho);
+    for (unsigned int i = 0; i < image->h; ++i) {
+        for (unsigned int j = 0; j < image->w; ++j) {
             Pixel media = {0, 0, 0};
 
-            int menor_h = (h - 1 > i + T/2) ? i + T/2 : h - 1;
-            int min_w = (w - 1 > j + T/2) ? j + T/2 : w - 1;
-            for(int x = (0 > i - T/2 ? 0 : i - T/2); x <= menor_h; ++x) {
-                for(int y = (0 > j - T/2 ? 0 : j - T/2); y <= min_w; ++y) {
-                    media.r += pixel[x][y][0];
-                    media.g += pixel[x][y][1];
-                    media.b += pixel[x][y][2];
+            int menor_h = (image->h - 1 > i + tamanho/2) ? i + tamanho/2 : image->h - 1;
+            int min_w = (image->w - 1 > j + tamanho/2) ? j + tamanho/2 : image->w - 1;
+            for(int x = (0 > i - tamanho/2 ? 0 : i - tamanho/2); x <= menor_h; ++x) {
+                for(int y = (0 > j - tamanho/2 ? 0 : j - tamanho/2); y <= min_w; ++y) {
+                    media.r += image->pixel[x][y][0];
+                    media.g += image->pixel[x][y][1];
+                    media.b += image->pixel[x][y][2];
                 }
             }
 
             // printf("%u", media.r)
-            media.r /= T * T;
-            media.g /= T * T;
-            media.b /= T * T;
+            media.r /= tamanho * tamanho;
+            media.g /= tamanho * tamanho;
+            media.b /= tamanho * tamanho;
 
-            pixel[i][j][0] = media.r;
-            pixel[i][j][1] = media.g;
-            pixel[i][j][2] = media.b;
+            image->pixel[i][j][0] = media.r;
+            image->pixel[i][j][1] = media.g;
+            image->pixel[i][j][2] = media.b;
         }
     }
 }
@@ -202,13 +204,10 @@ int main() {
             }
             case 2: { // Filtro Sepia
                 sepia(&img);
-
                 break;
             }
             case 3: { // Blur
-                int tamanho = 0;
-                scanf("%d", &tamanho);
-                blur(img.h, img.pixel, tamanho, img.w);
+                blur(&img);
                 break;
             }
             case 4: { // Rotacao
