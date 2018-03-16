@@ -154,6 +154,38 @@ void sepia(Image* image) {
     }
 }
 
+void espelhamento_vertical(Image* image) {
+    int horizontal = 0;
+    scanf("%d", &horizontal);
+
+    int w = image->w, h = image->h;
+
+    if (horizontal == 1) w /= 2;
+    else h /= 2;
+
+    for (int i = 0; i < h; ++i) {
+        for (int j = 0; j < w; ++j) {
+            int x = i, y = j;
+
+            if (horizontal == 1) y = image->w - 1 - j;
+            else x = image->h - 1 - i;
+
+            Pixel aux1;
+            aux1.r = image->pixel[i][j][0];
+            aux1.g = image->pixel[i][j][1];
+            aux1.b = image->pixel[i][j][2];
+
+            image->pixel[i][j][0] = image->pixel[x][y][0];
+            image->pixel[i][j][1] = image->pixel[x][y][1];
+            image->pixel[i][j][2] = image->pixel[x][y][2];
+
+            image->pixel[x][y][0] = aux1.r;
+            image->pixel[x][y][1] = aux1.g;
+            image->pixel[x][y][2] = aux1.b;
+        }
+    }
+}
+
 
 void imprimir_pixel(Image image) {
     for (unsigned int i = 0; i < image.h; ++i) {
@@ -223,35 +255,7 @@ int main() {
                 break;
             }
             case 5: { // Espelhamento
-                int horizontal = 0;
-                scanf("%d", &horizontal);
-
-                int w = image.w, h = image.h;
-
-                if (horizontal == 1) w /= 2;
-                else h /= 2;
-
-                for (int i2 = 0; i2 < h; ++i2) {
-                    for (int j = 0; j < w; ++j) {
-                        int x = i2, y = j;
-
-                        if (horizontal == 1) y = image.w - 1 - j;
-                        else x = image.h - 1 - i2;
-
-                        Pixel aux1;
-                        aux1.r = image.pixel[i2][j][0];
-                        aux1.g = image.pixel[i2][j][1];
-                        aux1.b = image.pixel[i2][j][2];
-
-                        image.pixel[i2][j][0] = image.pixel[x][y][0];
-                        image.pixel[i2][j][1] = image.pixel[x][y][1];
-                        image.pixel[i2][j][2] = image.pixel[x][y][2];
-
-                        image.pixel[x][y][0] = aux1.r;
-                        image.pixel[x][y][1] = aux1.g;
-                        image.pixel[x][y][2] = aux1.b;
-                    }
-                }
+                espelhamento_vertical(&image);
                 break;
             }
             case 6: { // Inversao de Cores
