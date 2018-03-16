@@ -32,26 +32,18 @@ int pixel_igual(Pixel p1, Pixel p2) {
 }
 
 
-Image escala_de_cinza(Image image) {
-    /*for (unsigned int i = 0; i < image.h; ++i) {
-        for (unsigned int j = 0; j < image.w; ++j) {
-            print("%u", image.pixel[i][j][0] + image.pixel[i][j][1] + image.pixel[i][j][2]);
-        }
-    }*/
-
-    for (unsigned int i = 0; i < image.h; ++i) {
-        for (unsigned int j = 0; j < image.w; ++j) {
-            int media = image.pixel[i][j][0] +
-                        image.pixel[i][j][1] +
-                        image.pixel[i][j][2];
+void escala_de_cinza(Image* image) {
+    for (unsigned int i = 0; i < image->h; ++i) {
+        for (unsigned int j = 0; j < image->w; ++j) {
+            int media = image->pixel[i][j][0] +
+                        image->pixel[i][j][1] +
+                        image->pixel[i][j][2];
             media /= 3;
-            image.pixel[i][j][0] = media;
-            image.pixel[i][j][1] = media;
-            image.pixel[i][j][2] = media;
+            image->pixel[i][j][0] = media;
+            image->pixel[i][j][1] = media;
+            image->pixel[i][j][2] = media;
         }
     }
-
-    return image;
 }
 
 void blur(Image* image) {
@@ -100,18 +92,17 @@ Image rotacionar90direita(Image image) {
     return rotacionada;
 }
 
-void inverter_cores(unsigned short int pixel[512][512][3],
-                    unsigned int w, unsigned int h) {
-    for (unsigned int i = 0; i < h; ++i) {
-        for (unsigned int j = 0; j < w; ++j) {
-            pixel[i][j][0] = 255 - pixel[i][j][0];
-            pixel[i][j][1] = 255 - pixel[i][j][1];
-            pixel[i][j][2] = 255 - pixel[i][j][2];
+void inverter_cores(Image* image) {
+    for (unsigned int i = 0; i < image->h; ++i) {
+        for (unsigned int j = 0; j < image->w; ++j) {
+            image->pixel[i][j][0] = 255 - image->pixel[i][j][0];
+            image->pixel[i][j][1] = 255 - image->pixel[i][j][1];
+            image->pixel[i][j][2] = 255 - image->pixel[i][j][2];
         }
     }
 }
 
-Image cortar_imagem(Image image) {
+void cortar_imagem(Image* image) {
     int x, y;
     scanf("%d %d", &x, &y);
     int w, h;
@@ -122,13 +113,12 @@ Image cortar_imagem(Image image) {
 
     for(int i = 0; i < h; ++i) {
         for(int j = 0; j < w; ++j) {
-            cortada.pixel[i][j][0] = image.pixel[i + y][j + x][0];
-            cortada.pixel[i][j][1] = image.pixel[i + y][j + x][1];
-            cortada.pixel[i][j][2] = image.pixel[i + y][j + x][2];
+            cortada.pixel[i][j][0] = image->pixel[i + y][j + x][0];
+            cortada.pixel[i][j][1] = image->pixel[i + y][j + x][1];
+            cortada.pixel[i][j][2] = image->pixel[i + y][j + x][2];
         }
     }
-
-    return cortada;
+    *image = cortada;
 }
 
 void sepia(Image* image) {
@@ -234,7 +224,7 @@ int main() {
 
         switch(opcao) {
             case 1: { // Escala de Cinza
-                image = escala_de_cinza(image);
+                escala_de_cinza(&image);
                 break;
             }
             case 2: { // Filtro Sepia
@@ -259,11 +249,11 @@ int main() {
                 break;
             }
             case 6: { // Inversao de Cores
-                inverter_cores(image.pixel, image.w, image.h);
+                inverter_cores(&image);
                 break;
             }
             case 7: { // Cortar Imagem
-                image = cortar_imagem(image);
+                cortar_imagem(&image);
                 break;
             }
         }
