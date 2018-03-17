@@ -189,6 +189,15 @@ void imprimir_pixel(Image image) {
     }
 }
 
+void imprimir_imagem(Image image) {
+    // print type of image
+    printf("P3\n");
+    // print width height and color of image
+    printf("%u %u\n255\n", image.w, image.h);
+    // print pixels of image
+    imprimir_pixel(image);
+}
+
 void ler_pixel(Image* image) {
     for (unsigned int i = 0; i < image->h; ++i) {
         for (unsigned int j = 0; j < image->w; ++j) {
@@ -257,15 +266,7 @@ int main() {
                 break;
             }
         }
-
     }
-
-    // print type of image
-    printf("P3\n");
-    // print width height and color of image
-    printf("%u %u\n255\n", image.w, image.h);
-
-    // print pixels of image
-    imprimir_pixel(image);
+    imprimir_imagem(image);
     return 0;
 }
