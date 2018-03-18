@@ -136,6 +136,10 @@ void sepia(Image* image) {
     }
 }
 
+void swap_pixels(Pixel* pixels_a, Pixel* pixels_b) {
+
+}
+
 void vertical_mirroring(Image* image) {
     int horizontal = 0;
     scanf("%d", &horizontal);
@@ -200,20 +204,21 @@ void read_pixels(Image* image) {
     }
 }
 
+void read_image(Image* image) {
+    // read image header
+    char p3[4];
+    scanf("%s", p3);
+    int max_color;
+    scanf("%u %u %d", &image->width, &image->height, &max_color);
+    // read all pixels of image
+    read_pixels(image);
+}
+
 
 int main() {
     Image image;
 
-    // read type of image
-    char p3[4];
-    scanf("%s", p3);
-
-    // read width height and color of image
-    int max_color;
-    scanf("%u %u %d", &image.width, &image.height, &max_color);
-
-    // read all pixels of image
-    read_pixels(&image);
+    read_image(&image);
 
     int n_opcoes;
     scanf("%d", &n_opcoes);
