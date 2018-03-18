@@ -16,16 +16,24 @@ typedef struct _image {
     unsigned int height;
 } Image;
 
+unsigned int line;
+unsigned int column;
+
+int calculate_mean_rgb(Image* image) {
+    int mean;
+    int sum_rgb = image->pixel[line][column][0] + image->pixel[line][column][1] + image->pixel[line][column][2];
+    int pixels_amount = 3;
+    mean = sum_rgb/pixels_amount;
+    return mean;
+}
+
 void gray_scale(Image* image) {
-    for (unsigned int i = 0; i < image->height; ++i) {
-        for (unsigned int j = 0; j < image->width; ++j) {
-            int media = image->pixel[i][j][0] +
-                        image->pixel[i][j][1] +
-                        image->pixel[i][j][2];
-            media /= 3;
-            image->pixel[i][j][0] = media;
-            image->pixel[i][j][1] = media;
-            image->pixel[i][j][2] = media;
+    for (line = 0; line < image->height; ++line) {
+        for (column = 0; column < image->width; ++column) {
+            int media = calculate_mean_rgb(image);
+            image->pixel[line][column][0] = media;
+            image->pixel[line][column][1] = media;
+            image->pixel[line][column][2] = media;
         }
     }
 }
@@ -185,14 +193,6 @@ void print_pixels(Image image) {
     }
 }
 
-void print_image(Image image) {
-    // print ppm image header
-    printf("P3\n");
-    printf("%u %u\n255\n", image.width, image.height);
-    // print pixels of image
-    print_pixels(image);
-}
-
 void read_pixels(Image* image) {
     for (unsigned int i = 0; i < image->height; ++i) {
         for (unsigned int j = 0; j < image->width; ++j) {
@@ -204,16 +204,28 @@ void read_pixels(Image* image) {
     }
 }
 
-void read_image(Image* image) {
-    // read image header
+void read_image_header(Image* image) {
     char p3[4];
     scanf("%s", p3);
     int max_color;
     scanf("%u %u %d", &image->width, &image->height, &max_color);
-    // read all pixels of image
+}
+
+void read_image(Image* image) {
+    read_image_header(image);
     read_pixels(image);
 }
 
+
+void print_image_header(Image image) {
+    printf("P3\n");
+    printf("%u %u\n255\n", image.width, image.height);
+}
+
+void print_image(Image image) {
+    print_image_header(image);
+    print_pixels(image);
+}
 
 int main() {
     Image image;
