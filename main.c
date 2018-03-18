@@ -27,38 +27,47 @@ int calculate_mean_rgb(Image* image) {
     return mean;
 }
 
+void update_pixel_value(Image* image, Pixel pixel_value) {
+    image->pixel[line][column][0] = pixel_value.red;
+    image->pixel[line][column][1] = pixel_value.green;
+    image->pixel[line][column][2] = pixel_value.blue;
+}
+
 void gray_scale(Image* image) {
+    Pixel new_pixel_value;
+    int mean;
     for (line = 0; line < image->height; ++line) {
         for (column = 0; column < image->width; ++column) {
-            int media = calculate_mean_rgb(image);
-            image->pixel[line][column][0] = media;
-            image->pixel[line][column][1] = media;
-            image->pixel[line][column][2] = media;
+            mean = calculate_mean_rgb(image);
+            new_pixel_value.red = mean;
+            new_pixel_value.green = mean;
+            new_pixel_value.blue = mean;
+            update_pixel_value(image, new_pixel_value);
         }
     }
 }
 
 void blur(Image* image) {
-    int tamanho = 0;
-    scanf("%d", &tamanho);
+    int blur_amount = 0;
+    scanf("%d", &blur_amount);
+
     for (unsigned int i = 0; i < image->height; ++i) {
         for (unsigned int j = 0; j < image->width; ++j) {
             Pixel media = {0, 0, 0};
 
-            int menor_h = (image->height - 1 > i + tamanho/2) ? i + tamanho/2 : image->height - 1;
-            int min_w = (image->width - 1 > j + tamanho/2) ? j + tamanho/2 : image->width - 1;
-            for(int x = (0 > i - tamanho/2 ? 0 : i - tamanho/2); x <= menor_h; ++x) {
-                for(int y = (0 > j - tamanho/2 ? 0 : j - tamanho/2); y <= min_w; ++y) {
+            int menor_h = (image->height - 1 > i + blur_amount/2) ? i + blur_amount/2 : image->height - 1;
+            int min_w = (image->width - 1 > j + blur_amount/2) ? j + blur_amount/2 : image->width - 1;
+            for(int x = (0 > i - blur_amount/2 ? 0 : i - blur_amount/2); x <= menor_h; ++x) {
+                for(int y = (0 > j - blur_amount/2 ? 0 : j - blur_amount/2); y <= min_w; ++y) {
                     media.red += image->pixel[x][y][0];
                     media.green += image->pixel[x][y][1];
                     media.blue += image->pixel[x][y][2];
                 }
             }
 
-            // printf("%u", media.r)
-            media.red /= tamanho * tamanho;
-            media.green /= tamanho * tamanho;
-            media.blue /= tamanho * tamanho;
+            media.red /= blur_amount * blur_amount;
+            media.green /= blur_amount * blur_amount;
+            media.blue /= blur_amount * blur_amount;
 
             image->pixel[i][j][0] = media.red;
             image->pixel[i][j][1] = media.green;
