@@ -21,7 +21,9 @@ unsigned int column;
 
 int calculate_mean_rgb(Image* image) {
     int mean;
-    int sum_rgb = image->pixel[line][column].red + image->pixel[line][column].green + image->pixel[line][column].blue;
+    int sum_rgb = image->pixel[line][column].red +
+                  image->pixel[line][column].green +
+                  image->pixel[line][column].blue;
     int pixels_amount = 3;
     mean = sum_rgb/pixels_amount;
     return mean;
@@ -43,18 +45,28 @@ void gray_scale(Image* image) {
     }
 }
 
+int minimum_value(int value_a, int value_b) {
+  if(value_a < value_b) {
+      return value_a;
+  } else {
+      return value_b;
+  }
+}
+
 void blur(Image* image) {
     int blur_amount = 0;
     scanf("%d", &blur_amount);
 
+    int minimum_height;
+    int minimum_width;
     for (unsigned int i = 0; i < image->height; ++i) {
         for (unsigned int j = 0; j < image->width; ++j) {
             Pixel media = {0, 0, 0};
 
-            int menor_h = (image->height - 1 > i + blur_amount/2) ? i + blur_amount/2 : image->height - 1;
-            int min_w = (image->width - 1 > j + blur_amount/2) ? j + blur_amount/2 : image->width - 1;
-            for(int x = (0 > i - blur_amount/2 ? 0 : i - blur_amount/2); x <= menor_h; ++x) {
-                for(int y = (0 > j - blur_amount/2 ? 0 : j - blur_amount/2); y <= min_w; ++y) {
+            minimum_height = minimum_value(image->height - 1, i + blur_amount/2);
+            minimum_width = minimum_value(image->width - 1, j + blur_amount/2);
+            for(int x = (0 > i - blur_amount/2 ? 0 : i - blur_amount/2); x <= minimum_height; ++x) {
+                for(int y = (0 > j - blur_amount/2 ? 0 : j - blur_amount/2); y <= minimum_width; ++y) {
                     media.red += image->pixel[x][y].red;
                     media.green += image->pixel[x][y].green;
                     media.blue += image->pixel[x][y].blue;
@@ -127,6 +139,8 @@ void image_cut(Image* image) {
 }
 
 void sepia(Image* image) {
+  int minimum_red;
+  int p;
     for (unsigned int x = 0; x < image->height; ++x) {
         for (unsigned int j = 0; j < image->width; ++j) {
             Pixel pixel;
@@ -134,17 +148,17 @@ void sepia(Image* image) {
             pixel.green = image->pixel[x][j].green;
             pixel.blue = image->pixel[x][j].blue;
 
-            int p =  pixel.red * .393 + pixel.green * .769 + pixel.blue * .189;
-            int menor_r = (255 >  p) ? p : 255;
-            image->pixel[x][j].red = menor_r;
+            p =  pixel.red * .393 + pixel.green * .769 + pixel.blue * .189;
+            minimum_red = minimum_value(255, p);
+            image->pixel[x][j].red = minimum_red;
 
             p =  pixel.red * .349 + pixel.green * .686 + pixel.blue * .168;
-            menor_r = (255 >  p) ? p : 255;
-            image->pixel[x][j].green = menor_r;
+            minimum_red = minimum_value(255, p);
+            image->pixel[x][j].green = minimum_red;
 
             p =  pixel.red * .272 + pixel.green * .534 + pixel.blue * .131;
-            menor_r = (255 >  p) ? p : 255;
-            image->pixel[x][j].blue = menor_r;
+            minimum_red = minimum_value(255, p);
+            image->pixel[x][j].blue = minimum_red;
         }
     }
 }
