@@ -27,12 +27,6 @@ int calculate_mean_rgb(Image* image) {
     return mean;
 }
 
-void update_pixel_value(Image* image, Pixel pixel_value) {
-    image->pixel[line][column][0] = pixel_value.red;
-    image->pixel[line][column][1] = pixel_value.green;
-    image->pixel[line][column][2] = pixel_value.blue;
-}
-
 void gray_scale(Image* image) {
     Pixel new_pixel_value;
     int mean;
@@ -42,7 +36,9 @@ void gray_scale(Image* image) {
             new_pixel_value.red = mean;
             new_pixel_value.green = mean;
             new_pixel_value.blue = mean;
-            update_pixel_value(image, new_pixel_value);
+            image->pixel[line][column][0] = new_pixel_value.red;
+            image->pixel[line][column][1] = new_pixel_value.green;
+            image->pixel[line][column][2] = new_pixel_value.blue;
         }
     }
 }
