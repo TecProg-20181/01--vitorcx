@@ -138,33 +138,33 @@ void image_cut(Image* image) {
     *image = cortada;
 }
 
-void sepia(Image* image) {
-  int minimum_red;
-  int p;
-    for (unsigned int x = 0; x < image->height; ++x) {
-        for (unsigned int j = 0; j < image->width; ++j) {
-            Pixel pixel;
-            pixel.red = image->pixel[x][j].red;
-            pixel.green = image->pixel[x][j].green;
-            pixel.blue = image->pixel[x][j].blue;
+void apply_minimum_red(Image* image){
+    Pixel pixel;
+    int minimum_red;
+    int sepia_value;
+    pixel.red = image->pixel[line][column].red;
+    pixel.green = image->pixel[line][column].green;
+    pixel.blue = image->pixel[line][column].blue;
 
-            p =  pixel.red * .393 + pixel.green * .769 + pixel.blue * .189;
-            minimum_red = minimum_value(255, p);
-            image->pixel[x][j].red = minimum_red;
+    sepia_value =  pixel.red * .393 + pixel.green * .769 + pixel.blue * .189;
+    minimum_red = minimum_value(255, sepia_value);
+    image->pixel[line][column].red = minimum_red;
 
-            p =  pixel.red * .349 + pixel.green * .686 + pixel.blue * .168;
-            minimum_red = minimum_value(255, p);
-            image->pixel[x][j].green = minimum_red;
+    sepia_value =  pixel.red * .349 + pixel.green * .686 + pixel.blue * .168;
+    minimum_red = minimum_value(255, sepia_value);
+    image->pixel[line][column].green = minimum_red;
 
-            p =  pixel.red * .272 + pixel.green * .534 + pixel.blue * .131;
-            minimum_red = minimum_value(255, p);
-            image->pixel[x][j].blue = minimum_red;
-        }
-    }
+    sepia_value =  pixel.red * .272 + pixel.green * .534 + pixel.blue * .131;
+    minimum_red = minimum_value(255, sepia_value);
+    image->pixel[line][column].blue = minimum_red;
 }
 
-void swap_pixels(Pixel* pixels_a, Pixel* pixels_b) {
-
+void sepia(Image* image) {
+    for (line = 0; line < image->height; ++line) {
+        for (column = 0; column < image->width; ++column) {
+            apply_minimum_red(image);
+        }
+    }
 }
 
 void vertical_mirroring(Image* image) {
