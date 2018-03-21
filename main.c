@@ -11,7 +11,7 @@ typedef struct _image {
     // 0 -> r
     // 1 -> g
     // 2 -> b
-    unsigned short int pixel[512][512][3];
+    Pixel pixel[512][512];
     unsigned int width;
     unsigned int height;
 } Image;
@@ -21,7 +21,7 @@ unsigned int column;
 
 int calculate_mean_rgb(Image* image) {
     int mean;
-    int sum_rgb = image->pixel[line][column][0] + image->pixel[line][column][1] + image->pixel[line][column][2];
+    int sum_rgb = image->pixel[line][column].red + image->pixel[line][column].green + image->pixel[line][column].blue;
     int pixels_amount = 3;
     mean = sum_rgb/pixels_amount;
     return mean;
@@ -36,9 +36,9 @@ void gray_scale(Image* image) {
             new_pixel_value.red = mean;
             new_pixel_value.green = mean;
             new_pixel_value.blue = mean;
-            image->pixel[line][column][0] = new_pixel_value.red;
-            image->pixel[line][column][1] = new_pixel_value.green;
-            image->pixel[line][column][2] = new_pixel_value.blue;
+            image->pixel[line][column].red = new_pixel_value.red;
+            image->pixel[line][column].green = new_pixel_value.green;
+            image->pixel[line][column].blue = new_pixel_value.blue;
         }
     }
 }
@@ -55,9 +55,9 @@ void blur(Image* image) {
             int min_w = (image->width - 1 > j + blur_amount/2) ? j + blur_amount/2 : image->width - 1;
             for(int x = (0 > i - blur_amount/2 ? 0 : i - blur_amount/2); x <= menor_h; ++x) {
                 for(int y = (0 > j - blur_amount/2 ? 0 : j - blur_amount/2); y <= min_w; ++y) {
-                    media.red += image->pixel[x][y][0];
-                    media.green += image->pixel[x][y][1];
-                    media.blue += image->pixel[x][y][2];
+                    media.red += image->pixel[x][y].red;
+                    media.green += image->pixel[x][y].green;
+                    media.blue += image->pixel[x][y].blue;
                 }
             }
 
@@ -65,9 +65,9 @@ void blur(Image* image) {
             media.green /= blur_amount * blur_amount;
             media.blue /= blur_amount * blur_amount;
 
-            image->pixel[i][j][0] = media.red;
-            image->pixel[i][j][1] = media.green;
-            image->pixel[i][j][2] = media.blue;
+            image->pixel[i][j].red = media.red;
+            image->pixel[i][j].green = media.green;
+            image->pixel[i][j].blue = media.blue;
         }
     }
 }
@@ -80,9 +80,9 @@ void rotate_90_right(Image* image) {
 
     for (unsigned int i = 0, y = 0; i < rotated_image.height; ++i, ++y) {
         for (int j = rotated_image.width - 1, x = 0; j >= 0; --j, ++x) {
-            rotated_image.pixel[i][j][0] = image->pixel[x][y][0];
-            rotated_image.pixel[i][j][1] = image->pixel[x][y][1];
-            rotated_image.pixel[i][j][2] = image->pixel[x][y][2];
+            rotated_image.pixel[i][j].red = image->pixel[x][y].red;
+            rotated_image.pixel[i][j].green = image->pixel[x][y].green;
+            rotated_image.pixel[i][j].blue = image->pixel[x][y].blue;
         }
     }
     *image = rotated_image;
@@ -100,9 +100,9 @@ void rotate_90_right_multiple_times(Image* image) {
 void color_inversion(Image* image) {
     for (unsigned int i = 0; i < image->height; ++i) {
         for (unsigned int j = 0; j < image->width; ++j) {
-            image->pixel[i][j][0] = 255 - image->pixel[i][j][0];
-            image->pixel[i][j][1] = 255 - image->pixel[i][j][1];
-            image->pixel[i][j][2] = 255 - image->pixel[i][j][2];
+            image->pixel[i][j].red = 255 - image->pixel[i][j].red;
+            image->pixel[i][j].green = 255 - image->pixel[i][j].green;
+            image->pixel[i][j].blue = 255 - image->pixel[i][j].blue;
         }
     }
 }
@@ -118,9 +118,9 @@ void image_cut(Image* image) {
 
     for(int i = 0; i < h; ++i) {
         for(int j = 0; j < w; ++j) {
-            cortada.pixel[i][j][0] = image->pixel[i + y][j + x][0];
-            cortada.pixel[i][j][1] = image->pixel[i + y][j + x][1];
-            cortada.pixel[i][j][2] = image->pixel[i + y][j + x][2];
+            cortada.pixel[i][j].red = image->pixel[i + y][j + x].red;
+            cortada.pixel[i][j].green = image->pixel[i + y][j + x].green;
+            cortada.pixel[i][j].blue = image->pixel[i + y][j + x].blue;
         }
     }
     *image = cortada;
@@ -129,22 +129,22 @@ void image_cut(Image* image) {
 void sepia(Image* image) {
     for (unsigned int x = 0; x < image->height; ++x) {
         for (unsigned int j = 0; j < image->width; ++j) {
-            unsigned short int pixel[3];
-            pixel[0] = image->pixel[x][j][0];
-            pixel[1] = image->pixel[x][j][1];
-            pixel[2] = image->pixel[x][j][2];
+            Pixel pixel;
+            pixel.red = image->pixel[x][j].red;
+            pixel.green = image->pixel[x][j].green;
+            pixel.blue = image->pixel[x][j].blue;
 
-            int p =  pixel[0] * .393 + pixel[1] * .769 + pixel[2] * .189;
+            int p =  pixel.red * .393 + pixel.green * .769 + pixel.blue * .189;
             int menor_r = (255 >  p) ? p : 255;
-            image->pixel[x][j][0] = menor_r;
+            image->pixel[x][j].red = menor_r;
 
-            p =  pixel[0] * .349 + pixel[1] * .686 + pixel[2] * .168;
+            p =  pixel.red * .349 + pixel.green * .686 + pixel.blue * .168;
             menor_r = (255 >  p) ? p : 255;
-            image->pixel[x][j][1] = menor_r;
+            image->pixel[x][j].green = menor_r;
 
-            p =  pixel[0] * .272 + pixel[1] * .534 + pixel[2] * .131;
+            p =  pixel.red * .272 + pixel.green * .534 + pixel.blue * .131;
             menor_r = (255 >  p) ? p : 255;
-            image->pixel[x][j][2] = menor_r;
+            image->pixel[x][j].blue = menor_r;
         }
     }
 }
@@ -170,17 +170,17 @@ void vertical_mirroring(Image* image) {
             else x = image->height - 1 - i;
 
             Pixel aux1;
-            aux1.red = image->pixel[i][j][0];
-            aux1.green = image->pixel[i][j][1];
-            aux1.blue = image->pixel[i][j][2];
+            aux1.red = image->pixel[i][j].red;
+            aux1.green = image->pixel[i][j].green;
+            aux1.blue = image->pixel[i][j].blue;
 
-            image->pixel[i][j][0] = image->pixel[x][y][0];
-            image->pixel[i][j][1] = image->pixel[x][y][1];
-            image->pixel[i][j][2] = image->pixel[x][y][2];
+            image->pixel[i][j].red = image->pixel[x][y].red;
+            image->pixel[i][j].green = image->pixel[x][y].green;
+            image->pixel[i][j].blue = image->pixel[x][y].blue;
 
-            image->pixel[x][y][0] = aux1.red;
-            image->pixel[x][y][1] = aux1.green;
-            image->pixel[x][y][2] = aux1.blue;
+            image->pixel[x][y].red = aux1.red;
+            image->pixel[x][y].green = aux1.green;
+            image->pixel[x][y].blue = aux1.blue;
         }
     }
 }
@@ -189,9 +189,9 @@ void vertical_mirroring(Image* image) {
 void print_pixels(Image image) {
     for (unsigned int i = 0; i < image.height; ++i) {
         for (unsigned int j = 0; j < image.width; ++j) {
-            printf("%hu %hu %hu ", image.pixel[i][j][0],
-                                   image.pixel[i][j][1],
-                                   image.pixel[i][j][2]);
+            printf("%hu %hu %hu ", image.pixel[i][j].red,
+                                   image.pixel[i][j].green,
+                                   image.pixel[i][j].blue);
 
         }
         printf("\n");
@@ -201,9 +201,9 @@ void print_pixels(Image image) {
 void read_pixels(Image* image) {
     for (unsigned int i = 0; i < image->height; ++i) {
         for (unsigned int j = 0; j < image->width; ++j) {
-            scanf("%hu %hu %hu", &image->pixel[i][j][0],
-                                 &image->pixel[i][j][1],
-                                 &image->pixel[i][j][2]);
+            scanf("%hu %hu %hu", &image->pixel[i][j].red,
+                                 &image->pixel[i][j].green,
+                                 &image->pixel[i][j].blue);
 
         }
     }
